@@ -29,14 +29,17 @@ public class SecurityConfig {
 	public SecurityFilterChain secutiryFilterChain(HttpSecurity http) throws Exception {
 		
 		http.csrf(csrf -> csrf.disable())
+		.cors(cors -> cors.and())
 		.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 		.authorizeHttpRequests(authorize -> authorize
-				.requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
-				.requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
-				.anyRequest().authenticated()
+				//.requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
+				//.requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
+				//.anyRequest().authenticated()
+				.anyRequest().permitAll()
 				
-		)
-		.addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
+		);
+		//.addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
+		
 		
 		return http.build();
 		
