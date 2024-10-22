@@ -2,6 +2,7 @@ package com.mbe.ada.controller;
 
 import com.mbe.ada.model.group.Group;
 import com.mbe.ada.model.group.dto.CreateGroupDTO;
+import com.mbe.ada.model.group.dto.DetailGroupDTO;
 import com.mbe.ada.model.person.Person;
 import com.mbe.ada.model.person.dto.PersonDTO;
 import com.mbe.ada.model.user.User;
@@ -23,8 +24,8 @@ public class GroupController{
     GroupService groupService;
 
     @GetMapping
-    public ResponseEntity<List<Group>> index() {
-        List<Group> groups = groupService.getAllGroups();
+    public ResponseEntity<List<DetailGroupDTO>> index() {
+        List<DetailGroupDTO> groups = groupService.getAllGroups();
         return ResponseEntity.ok(groups);
     }
 

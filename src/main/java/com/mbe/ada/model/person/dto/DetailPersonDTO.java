@@ -1,7 +1,10 @@
 package com.mbe.ada.model.person.dto;
 
 import java.time.LocalDate;
+import java.util.List;
 
+import com.mbe.ada.model.group.Group;
+import com.mbe.ada.model.group.dto.BasicGroupDTO;
 import com.mbe.ada.model.person.Person;
 
 public record DetailPersonDTO(
@@ -13,11 +16,17 @@ public record DetailPersonDTO(
 		LocalDate birthDate,
 		Boolean isTeacher,
 		Long userId,
-		String photo
+		String photo,
+		List<BasicGroupDTO> groups
 		) {
 	
 	public DetailPersonDTO(Person p, String photo) {
-		this(p.getId(), p.getName(), p.getLastname(), p.getEmail(), p.getCpf(), p.getBirthDate(), p.getIsTeacher(), p.getUserId(), photo);
+		this(p.getId(), p.getName(), p.getLastname(), p.getEmail(), p.getCpf(), p.getBirthDate(), p.getIsTeacher(), p.getUserId(), photo, null);
 	}
+	
+	public DetailPersonDTO(Person p, String photo, List<BasicGroupDTO> groups) {
+		this(p.getId(), p.getName(), p.getLastname(), p.getEmail(), p.getCpf(), p.getBirthDate(), p.getIsTeacher(), p.getUserId(), photo, groups);
+	}
+
 
 }

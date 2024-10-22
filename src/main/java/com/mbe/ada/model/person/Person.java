@@ -5,7 +5,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
+import com.mbe.ada.model.group.Group;
 import com.mbe.ada.model.person.dto.CreatePersonDTO;
 import com.mbe.ada.model.person.dto.PersonDTO;
 import com.mbe.ada.model.photo.Photo;
@@ -17,6 +19,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotEmpty;
@@ -74,6 +77,9 @@ public class Person {
 	
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Photo> photos;
+    
+    @ManyToMany(mappedBy = "persons", fetch = FetchType.LAZY)
+    private Set<Group> groups; // Alterado para Set<Group>
 
 	public Person(){}
 
@@ -200,8 +206,16 @@ public class Person {
 	public void setPhotos(List<Photo> photos) {
 		this.photos = photos;
 	}
-
 	
+	public Set<Group> getGroups() {
+		return groups;
+	}
+
+	public void setGroups(Set<Group> groups) {
+		this.groups = groups;
+	}
+
+
 	public Person updateValues(PersonDTO data) {
 		
 		if (data.name() != null) {

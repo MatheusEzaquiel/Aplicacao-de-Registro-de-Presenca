@@ -3,6 +3,7 @@ package com.mbe.ada.controller;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,12 +19,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.mbe.ada.model.group.dto.BasicGroupDTO;
 import com.mbe.ada.model.person.Person;
 import com.mbe.ada.model.person.dto.CreatePersonDTO;
 import com.mbe.ada.model.person.dto.DetailPersonDTO;
 import com.mbe.ada.model.person.dto.PersonDTO;
 import com.mbe.ada.model.photo.Photo;
 import com.mbe.ada.model.user.User;
+import com.mbe.ada.repository.IGroupRepository;
 import com.mbe.ada.repository.IPersonRepository;
 import com.mbe.ada.repository.IUserRepository;
 import com.mbe.ada.service.PhotoService;
@@ -41,6 +44,9 @@ public class PersonController {
 	@Autowired
 	PhotoService photoService;
 	
+	@Autowired 
+	IGroupRepository groupRepos;
+	
 	@GetMapping
 	public ResponseEntity<List<DetailPersonDTO>>  index() {		
 		
@@ -52,8 +58,14 @@ public class PersonController {
 		
 		List<DetailPersonDTO> dataDTO = data.stream()
 		.map(person -> {
+			
 			String imageData = photoService.getImageDataByPersonId(person.getId());
-			return new DetailPersonDTO(person, imageData);
+
+			List<BasicGroupDTO> groupsDTO = person.getGroups().stream()
+			.map(group -> new BasicGroupDTO(group))
+			.collect(Collectors.toList());
+		
+			return new DetailPersonDTO(person, imageData, groupsDTO);
 		})
 		.toList();
 		
@@ -65,14 +77,19 @@ public class PersonController {
 		
 		List<Person> data = personRepos.findByIsTeacherFalse();
 		
-		if(data.size() == 0)
+		if (data.size() == 0)
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		
+
 		List<DetailPersonDTO> dataDTO = data.stream().map(person -> {
+
 			String imageData = photoService.getImageDataByPersonId(person.getId());
-			return new DetailPersonDTO(person, imageData);
+
+			List<BasicGroupDTO> groupsDTO = person.getGroups().stream().map(group -> new BasicGroupDTO(group))
+					.collect(Collectors.toList());
+
+			return new DetailPersonDTO(person, imageData, groupsDTO);
 		}).toList();
-		
+
 		return new ResponseEntity<List<DetailPersonDTO>>(dataDTO, HttpStatus.OK);
 	}
 	
@@ -99,15 +116,20 @@ public class PersonController {
 		
 		if(data.size() == 0)
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		
+
 		List<DetailPersonDTO> dataDTO = data.stream().map(person -> {
+
 			String imageData = photoService.getImageDataByPersonId(person.getId());
-			return new DetailPersonDTO(person, imageData);
+
+			List<BasicGroupDTO> groupsDTO = person.getGroups().stream().map(group -> new BasicGroupDTO(group))
+					.collect(Collectors.toList());
+
+			return new DetailPersonDTO(person, imageData, groupsDTO);
 		}).toList();
-		
+
 		return new ResponseEntity<List<DetailPersonDTO>>(dataDTO, HttpStatus.OK);
 	}
-	
+
 	@PostMapping(consumes = "multipart/form-data")
 	public ResponseEntity<DetailPersonDTO> create(
 			@RequestParam("name") String name,
@@ -145,15 +167,22 @@ public class PersonController {
     @GetMapping("/{id}")
     public ResponseEntity<DetailPersonDTO> get(@PathVariable Long id) {
         
-    	Optional<Person> person = personRepos.findById(id);
+    	Optional<Person> personOpt = personRepos.findById(id);
         
-        if (person.isEmpty()) 
+        if (personOpt.isEmpty()) 
         	return new ResponseEntity("Pessoa não encontrada", HttpStatus.NOT_FOUND);
         
         
         String imageData = photoService.getImageDataByPersonId(id);
         
-        DetailPersonDTO dto = new DetailPersonDTO(person.get(), imageData);
+        
+        List<BasicGroupDTO> groupsDTO = personOpt.get().getGroups()
+        		.stream()
+        		.map(group -> new BasicGroupDTO(group))
+				.collect(Collectors.toList());
+	
+		DetailPersonDTO dto = new DetailPersonDTO(personOpt.get(), imageData, groupsDTO);
+		
         return new ResponseEntity<DetailPersonDTO>(dto, HttpStatus.OK);
     }
     
