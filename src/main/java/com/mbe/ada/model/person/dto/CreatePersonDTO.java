@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import com.mbe.ada.model.person.Person;
 import com.mbe.ada.model.photo.Photo;
 
+import jakarta.annotation.Nullable;
+
 public record CreatePersonDTO(
 		String name,
 		String lastname,
@@ -12,7 +14,10 @@ public record CreatePersonDTO(
 		String cpf,
 		LocalDate birthDate,
 		Boolean isTeacher,
-		Long userId
+		@Nullable Long userId,
+		String photoName,
+		String photo
 		) {
+	
 
 }

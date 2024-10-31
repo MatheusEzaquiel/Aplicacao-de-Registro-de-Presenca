@@ -1,5 +1,6 @@
 package com.mbe.ada.service;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.Optional;
@@ -26,7 +27,7 @@ public class PhotoService {
 	IPhotoRepository photoRepos;
 	
 	@Autowired
-	ImageService imageService;
+	ImageUtils imageService;
 	
 	@Autowired
 	IPersonRepository personRepos;
@@ -44,6 +45,45 @@ public class PhotoService {
 		
 	}
 	
+
+	
+	//1. resgatar nome e imagem base64
+	//2. Gerar novo nome codificado
+	//3. Converter base64 em File e salva na pasta
+	//4. Salvar imagembase64 no Banco
+	public Photo save(String fileBase64, String filename, Long personId, Boolean isDefault) {
+
+    	Optional<Person> person = personRepos.findById(personId);
+    	
+        if (person.isEmpty()) 
+        	System.out.println("Pessoa não encontrada");
+    	
+        
+		try {
+			
+			String newFilename = imageService.generateFileName(filename);
+			byte[] imageData = imageService.convertBase64ToByte(fileBase64, newFilename);
+			imageService.uploadImage(newFilename, imageData);
+			  
+	       
+	        Photo photoToCreate = new Photo(newFilename, fileBase64, person.get(), isDefault);
+	        
+	        // Caso não seja a foto de referencia, não salvar no BD
+	        if(!isDefault)
+	        	photoToCreate.setImageData(null);
+	        
+	        return photoRepos.save(photoToCreate);
+	        
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+      
+        return null;
+        
+  
+	}
+	
+	/*
 	public Photo create(MultipartFile file, Long personId, Boolean isDefault) {
 
     	Optional<Person> person = personRepos.findById(personId);
@@ -77,5 +117,6 @@ public class PhotoService {
         
   
 	}
+	*/
 
 }

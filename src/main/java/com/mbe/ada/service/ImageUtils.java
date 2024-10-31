@@ -2,6 +2,7 @@ package com.mbe.ada.service;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -11,7 +12,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ImageService {
+public class ImageUtils {
 	
 	private Path folderPath = Path.of("/opt/images");
 	
@@ -33,6 +34,11 @@ public class ImageService {
 		
 	}
 	
+	public String uploadFile(String fileBase64, String filename) throws IOException {
+
+		return null;
+
+	}
 	
 	public String saveImage(byte[] fileData, String filename) throws IOException {
 		
@@ -61,6 +67,13 @@ public class ImageService {
 		
 	}
 	
+	public String generateFileName(String filename) {
+		// Create new FileName
+		String extension = getExtensionFile(filename);
+		String fileNameUUID = UUID.randomUUID().toString();
+		return fileNameUUID + "." + extension;
+	}
+	
 	public String getExtensionFile(String filename) {
 		String[] part = filename.split("\\.");
 		int lastItem = part.length - 1;
@@ -70,6 +83,36 @@ public class ImageService {
 	public String getNameFile(String filename) {
 		String[] part = filename.split("\\.");
 		return part[0];
+	}
+	
+	public byte[] convertBase64ToByte (String base64Image, String filename) throws IOException {
+		System.out.println(base64Image);
+		// Remove o prefixo "data:image/png;base64," se estiver presente
+		if (base64Image.contains(",")) {
+			base64Image = base64Image.split(",")[1];
+		}
+
+		// Decodifica a string Base64 em bytes
+		byte[] imageBytes = Base64.getDecoder().decode(base64Image);
+
+		return imageBytes;
+	}
+	
+	public boolean uploadImage(String filename, byte[] bytes) {
+		
+		// Cria o arquivo no caminho especificado
+		File imageFile = new File(folderPath + File.separator + filename);
+		
+		
+		try (FileOutputStream fileOutputStream = new FileOutputStream(imageFile)) {
+			
+			fileOutputStream.write(bytes);
+			
+			return true;
+		} catch (Exception e) {
+			throw new RuntimeException("Error to upload file");
+		}
+		
 	}
 	
 }

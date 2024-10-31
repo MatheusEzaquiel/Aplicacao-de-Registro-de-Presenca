@@ -20,6 +20,10 @@ public record DetailPersonDTO(
 		List<BasicGroupDTO> groups
 		) {
 	
+	public DetailPersonDTO(Person p) {
+		this(p.getId(), p.getName(), p.getLastname(), p.getEmail(), p.getCpf(), p.getBirthDate(), p.getIsTeacher(), p.getUserId(), null, null);
+	}
+	
 	public DetailPersonDTO(Person p, String photo) {
 		this(p.getId(), p.getName(), p.getLastname(), p.getEmail(), p.getCpf(), p.getBirthDate(), p.getIsTeacher(), p.getUserId(), photo, null);
 	}

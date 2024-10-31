@@ -25,7 +25,7 @@ import com.mbe.ada.model.photo.Photo;
 import com.mbe.ada.model.photo.dto.PhotoDTO;
 import com.mbe.ada.repository.IPersonRepository;
 import com.mbe.ada.repository.IPhotoRepository;
-import com.mbe.ada.service.ImageService;
+import com.mbe.ada.service.ImageUtils;
 
 @RestController
 @RequestMapping(value = "/photos")
@@ -38,7 +38,7 @@ public class PhotoController {
 	IPersonRepository personRepos;
     
     @Autowired
-    ImageService imageService;
+    ImageUtils imageService;
 
 
     @GetMapping

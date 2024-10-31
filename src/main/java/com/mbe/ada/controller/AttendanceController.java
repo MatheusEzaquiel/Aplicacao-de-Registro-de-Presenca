@@ -22,7 +22,7 @@ import com.mbe.ada.model.person.Person;
 import com.mbe.ada.repository.IAttendanceRepository;
 import com.mbe.ada.repository.IPersonRepository;
 import com.mbe.ada.repository.IPhotoRepository;
-import com.mbe.ada.service.ImageService;
+import com.mbe.ada.service.ImageUtils;
 
 @RestController
 @RequestMapping("/attendances")
@@ -39,7 +39,7 @@ public class AttendanceController {
     IPhotoRepository photoRepos;
     
     @Autowired
-    ImageService imageService;
+    ImageUtils imageService;
 
     @GetMapping
     public ResponseEntity index() {
