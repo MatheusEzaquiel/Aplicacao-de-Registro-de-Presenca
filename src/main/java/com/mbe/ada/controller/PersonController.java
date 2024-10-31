@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.mbe.ada.model.auth.dto.ResponseDTO;
 import com.mbe.ada.model.group.dto.BasicGroupDTO;
 import com.mbe.ada.model.person.Person;
 import com.mbe.ada.model.person.dto.CreatePersonDTO;
@@ -29,6 +30,7 @@ import com.mbe.ada.model.user.User;
 import com.mbe.ada.repository.IGroupRepository;
 import com.mbe.ada.repository.IPersonRepository;
 import com.mbe.ada.repository.IUserRepository;
+import com.mbe.ada.service.PersonService;
 import com.mbe.ada.service.PhotoService;
 
 @RestController
@@ -46,6 +48,9 @@ public class PersonController {
 	
 	@Autowired 
 	IGroupRepository groupRepos;
+	
+	@Autowired
+	PersonService personService;
 	
 	@GetMapping
 	public ResponseEntity<List<DetailPersonDTO>>  index() {		
@@ -130,7 +135,7 @@ public class PersonController {
 		return new ResponseEntity<List<DetailPersonDTO>>(dataDTO, HttpStatus.OK);
 	}
 
-	@PostMapping(consumes = "multipart/form-data")
+	/*@PostMapping(consumes = "multipart/form-data")
 	public ResponseEntity<DetailPersonDTO> create(
 			@RequestParam("name") String name,
 			@RequestParam("lastname") String lastname,
@@ -162,6 +167,14 @@ public class PersonController {
         
         DetailPersonDTO dto = new DetailPersonDTO(savedPerson, photoCreated.getImageData());
         return new ResponseEntity<>(dto, HttpStatus.CREATED);
+    }*/
+	
+	@PostMapping
+	public ResponseEntity<ResponseDTO> create(@RequestBody CreatePersonDTO data) {
+		
+		ResponseDTO response = personService.save(data);
+        return new ResponseEntity<ResponseDTO>(response, HttpStatus.CREATED);
+        
     }
     
     @GetMapping("/{id}")
