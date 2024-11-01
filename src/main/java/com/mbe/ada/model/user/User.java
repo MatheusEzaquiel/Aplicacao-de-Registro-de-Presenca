@@ -3,12 +3,15 @@ package com.mbe.ada.model.user;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import com.mbe.ada.model.user.dto.CreateUserDTO;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -44,9 +47,8 @@ public class User {
 	private LocalDate birthDate;
 	
 	@Column(name = "password")
-	@NotNull
-	@NotEmpty
-	@Size(min = 8, max = 255)
+	@NotBlank
+	@Size(min = 8, max = 150)
 	private String password;
 
 	@Column(name = "is_active" )
@@ -57,12 +59,12 @@ public class User {
 
 	@Column(name = "updated_at")
 	private LocalDateTime updatedAt;
+	
+	
+	public User(){}
 
-	public User(Long id, String name,
-			String lastname, String email,
-			String cpf, LocalDate birthDate,
-			String password,
-			Boolean isActive, LocalDateTime createdAt, LocalDateTime updatedAt) {
+	public User(Long id, String name, String lastname, String email, String cpf, LocalDate birthDate,
+			String password, Boolean isActive, LocalDateTime createdAt, LocalDateTime updatedAt) {
 		this.id = id;
 		this.name = name;
 		this.lastname = lastname;
@@ -75,7 +77,16 @@ public class User {
 		this.updatedAt = updatedAt;
 	}
 	
-	public User(){}
+	public User(CreateUserDTO data) {
+		this.name = data.name();
+		this.lastname = data.lastname();
+		this.email = data.email();
+		this.cpf = data.cpf();
+		this.password = data.password();
+		this.birthDate = data.birthDate();
+		this.isActive = true;
+		this.createdAt = LocalDateTime.now();
+	}
 
 	@Override
 	public String toString() {
