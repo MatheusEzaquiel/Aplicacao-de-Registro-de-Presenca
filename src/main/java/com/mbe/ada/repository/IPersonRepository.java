@@ -18,6 +18,8 @@ public interface IPersonRepository extends JpaRepository<Person, Long>{
 	
 	List<Person> findByIsTeacherTrue();
 	
+	List<Person> findByIsTeacherFalseAndIsActiveTrue();
+	
 	List<Person> findByIsTeacherFalseAndIsActiveFalse();
 	
 }
