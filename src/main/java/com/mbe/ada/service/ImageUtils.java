@@ -10,6 +10,7 @@ import java.util.Base64;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class ImageUtils {
@@ -96,6 +97,15 @@ public class ImageUtils {
 		byte[] imageBytes = Base64.getDecoder().decode(base64Image);
 
 		return imageBytes;
+	}
+	
+	public String convertFileToBase64(MultipartFile file) {
+		
+		try {
+			return Base64.getEncoder().encodeToString(file.getBytes());
+		} catch (IOException e) {
+			throw new RuntimeException("Erro ao converte imagem para String base64");
+		}
 	}
 	
 	public boolean uploadImage(String filename, byte[] bytes) {
