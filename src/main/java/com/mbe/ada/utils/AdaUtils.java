@@ -3,6 +3,11 @@ package com.mbe.ada.utils;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.util.List;
+import java.util.Map;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.Gson;
+import java.lang.reflect.Type;
+
 
 public class AdaUtils {
 	
@@ -36,4 +41,25 @@ public class AdaUtils {
 		}
 	}
 
+	/**
+	 *  Convert a json String to Object MAP <String, Object>
+	 *  
+	 *  @param pathFile
+	 *  @param filename
+	 *  @param headerColumns
+	 *  @param rows
+	 *  
+	 *  
+	 *  @matheus.bezerra
+	 *  */
+    public static Map<String, Object> jsonToMap(String json) {
+        // Criação do objeto Gson
+        Gson gson = new Gson();
+        
+        // Definindo o tipo de Map (String, Object)
+        Type type = new TypeToken<Map<String, Object>>(){}.getType();
+        
+        // Convertendo o JSON para um Map
+        return gson.fromJson(json, type);
+    }
 }

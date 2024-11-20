@@ -2,6 +2,7 @@ package com.mbe.ada.controller;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +19,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.mbe.ada.model.attendance.Attendance;
 import com.mbe.ada.model.attendance.dto.CreateAttendanceDTO;
 import com.mbe.ada.model.attendance.dto.ListAttendanceDTO;
+import com.mbe.ada.model.attendance.dto.ResponseAttendanceDTO;
 import com.mbe.ada.model.auth.dto.ResponseDTO;
 import com.mbe.ada.model.person.Person;
 import com.mbe.ada.repository.IAttendanceRepository;
@@ -28,6 +32,8 @@ import com.mbe.ada.repository.IPersonRepository;
 import com.mbe.ada.repository.IPhotoRepository;
 import com.mbe.ada.service.APIService;
 import com.mbe.ada.service.ImageUtils;
+import com.mbe.ada.service.RecognitionAPIResponseDTO;
+import com.mbe.ada.utils.AdaUtils;
 
 import reactor.core.publisher.Mono;
 
@@ -122,17 +128,28 @@ public class AttendanceController {
             return Mono.just(new ResponseEntity<>(new ResponseDTO(400, "Imagem base64 não fornecida", null), HttpStatus.BAD_REQUEST));
         }
         
-        // Build the JSON request for the external service
-        String url = "http://127.0.0.1:8000/compare";
+        // Building the JSON request for the Recognition API
+        String url = "http://127.0.0.1:5001/compare";
         String requestJson = "{\"image_base64\": \"" + photoBase64 + "\"}";
 
         // Send the request asynchronously
         return apiService.makeRequest(url, requestJson)
             .map(response -> {
-                // Process the response
                 if (response != null) {
-                    // Assuming the service returns a valid response that you can parse
-                    return new ResponseEntity<>(new ResponseDTO(200, "Success", response), HttpStatus.OK);
+                	
+                	 Gson gson = new Gson();
+                	 
+                	 RecognitionAPIResponseDTO responseDTO = gson.fromJson(response, RecognitionAPIResponseDTO.class);
+                	 
+                	 // Get Photo name
+                     String[] photoName = responseDTO.refereceImagePath().split("/");
+                     String referenceImgBase64 = ImageUtils.getImageBase64(photoName[6], Person.class.getName());
+
+                	 //ResponseAttendanceDTO responseAttendanceDTO = new ResponseAttendanceDTO(true, photoBase64, referenceImgBase64);
+                     ResponseAttendanceDTO responseAttendanceDTO = new ResponseAttendanceDTO(true, photoBase64, referenceImgBase64);
+                	 
+                	 
+                    return new ResponseEntity<>(new ResponseDTO(200, "Success", responseAttendanceDTO), HttpStatus.OK);
                 } else {
                     // In case the response is null or empty
                     return new ResponseEntity<>(new ResponseDTO(500, "Error processing image", null), HttpStatus.INTERNAL_SERVER_ERROR);

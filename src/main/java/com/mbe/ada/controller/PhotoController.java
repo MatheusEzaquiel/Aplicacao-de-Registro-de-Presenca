@@ -38,7 +38,7 @@ public class PhotoController {
 	IPersonRepository personRepos;
     
     @Autowired
-    ImageUtils imageService;
+    ImageUtils imageUtils;
 
 
     @GetMapping
@@ -69,7 +69,7 @@ public class PhotoController {
         	return new ResponseEntity("Pessoa não encontrada", HttpStatus.NOT_FOUND);
     	
 
-        String newFileName = imageService.saveImage(file.getBytes(), file.getOriginalFilename());
+        String newFileName = imageUtils.saveImage(file.getBytes(), file.getOriginalFilename());
         
         //file -> byte[] -> base64
         String photoBase64 = Base64.getEncoder().encodeToString(file.getBytes());
@@ -97,20 +97,13 @@ public class PhotoController {
         
         Photo photo = photoOpt.get();
         
-        try {
-        	
-        	
-	        if(!photoOpt.get().isDefault()) {
-	        	
-	        	String imageBase64 = imageService.getImageBase64(photoOpt.get().getName());
-	        	
-	        	photo = photoOpt.get();
-	        	photo.setImageData(imageBase64);
-	        	
-	        }
-        
-		} catch (IOException e) {
-			e.printStackTrace();
+        if(!photoOpt.get().isDefault()) {
+			
+			String imageBase64 = ImageUtils.getImageBase64(photoOpt.get().getName(), null);
+			
+			photo = photoOpt.get();
+			photo.setImageData(imageBase64);
+			
 		}
 
         PhotoDTO photoDTO = new PhotoDTO(photo);

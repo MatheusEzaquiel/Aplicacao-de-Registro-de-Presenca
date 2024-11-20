@@ -15,27 +15,40 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class ImageUtils {
 	
-	private Path folderPath = Path.of("/opt/images");
+	private static Path folderPath = Path.of("/opt/images");
+	private static Path referenceImgPath = Path.of("/persons/reference-img");
 	
-	public String getImageBase64(String filename) throws IOException {
-		
-		byte[] fileData;
-		
-		File file = new File(folderPath + File.separator + filename);
-		
-		if(!file.exists())
-			throw new IOException("Arquivio de Imagem não encontrado " + filename);
-	
-		
-		try (FileInputStream fis = new FileInputStream(file)) {
-			fileData = fis.readAllBytes();
+	public static String getImageBase64(String filename, String entity) {
+
+	    byte[] fileData = null;
+        File file;
+
+        // Verifique se a entidade é nula e crie o caminho do arquivo
+        if (entity != null) {
+            file = new File(folderPath + File.separator + referenceImgPath + File.separator + filename);
+        } else {
+            file = new File(folderPath + File.separator + filename);
+        }
+
+        
+		if (!file.exists())
+			throw new RuntimeException("Arquivo de Imagem não encontrado " + filename);
+
+		try {
+
+			try (FileInputStream fis = new FileInputStream(file)) {
+				fileData = fis.readAllBytes();
+			}
+
+			return Base64.getEncoder().encodeToString(fileData);
+
+		} catch (Exception e) {
+			throw new RuntimeException("Erro ao Resgatar Imagem do Diretório");
 		}
-		
-		return Base64.getEncoder().encodeToString(fileData);
-		
+
 	}
 	
-	public String uploadFile(String fileBase64, String filename) throws IOException {
+	public static  String uploadFile(String fileBase64, String filename) throws IOException {
 
 		return null;
 
@@ -122,7 +135,7 @@ public class ImageUtils {
 		} catch (Exception e) {
 			throw new RuntimeException("Error to upload file");
 		}
-		
+
 	}
-	
+
 }
