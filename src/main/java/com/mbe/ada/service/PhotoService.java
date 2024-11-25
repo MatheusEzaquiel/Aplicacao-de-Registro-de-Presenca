@@ -1,17 +1,11 @@
 package com.mbe.ada.service;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.Base64;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.mbe.ada.model.person.Person;
 import com.mbe.ada.model.photo.Photo;
@@ -61,16 +55,18 @@ public class PhotoService {
         
 		try {
 			
-			String newFilename = imageService.generateFileName(filename);
-			byte[] imageData = imageService.convertBase64ToByte(fileBase64, newFilename);
-			imageService.uploadImage(newFilename, imageData);
+			byte[] imageData = imageService.convertBase64ToByte(fileBase64, filename);
+			if(!imageService.uploadImage(filename, imageData))
+				throw new RuntimeException("Erro ao fazer upload da imagem");
 			  
 	       
-	        Photo photoToCreate = new Photo(newFilename, fileBase64, person.get(), isDefault);
+	        Photo photoToCreate = new Photo(filename, fileBase64, person.get(), isDefault);
 	        
+	        /*
 	        // Caso não seja a foto de referencia, não salvar no BD
 	        if(!isDefault)
 	        	photoToCreate.setImageData(null);
+	        */
 	        
 	        return photoRepos.save(photoToCreate);
 	        

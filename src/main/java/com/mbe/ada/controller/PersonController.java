@@ -1,6 +1,5 @@
 package com.mbe.ada.controller;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -15,9 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.mbe.ada.model.auth.dto.ResponseDTO;
 import com.mbe.ada.model.group.dto.BasicGroupDTO;
@@ -25,11 +22,11 @@ import com.mbe.ada.model.person.Person;
 import com.mbe.ada.model.person.dto.CreatePersonDTO;
 import com.mbe.ada.model.person.dto.DetailPersonDTO;
 import com.mbe.ada.model.person.dto.PersonDTO;
-import com.mbe.ada.model.photo.Photo;
 import com.mbe.ada.model.user.User;
 import com.mbe.ada.repository.IGroupRepository;
 import com.mbe.ada.repository.IPersonRepository;
 import com.mbe.ada.repository.IUserRepository;
+import com.mbe.ada.service.ImageUtils;
 import com.mbe.ada.service.PersonService;
 import com.mbe.ada.service.PhotoService;
 
@@ -52,6 +49,10 @@ public class PersonController {
 	@Autowired
 	PersonService personService;
 	
+
+	@Autowired
+	ImageUtils imageUtils;
+	
 	@GetMapping
 	public ResponseEntity<List<DetailPersonDTO>>  index() {		
 		
@@ -64,13 +65,19 @@ public class PersonController {
 		List<DetailPersonDTO> dataDTO = data.stream()
 		.map(person -> {
 			
-			String imageData = photoService.getImageDataByPersonId(person.getId());
-
-			List<BasicGroupDTO> groupsDTO = person.getGroups().stream()
-			.map(group -> new BasicGroupDTO(group))
-			.collect(Collectors.toList());
+			String imageData = imageUtils.getImageBase64(person.getCpf(), Person.class.toString());
+			
+			if(person.getGroups() != null) {
+				List<BasicGroupDTO> groupsDTO = person.getGroups().stream()
+				.map(group -> new BasicGroupDTO(group))
+				.collect(Collectors.toList());
+				
+				return new DetailPersonDTO(person, imageData, groupsDTO);
+			}
+			
+			return new DetailPersonDTO(person, imageData, null);
 		
-			return new DetailPersonDTO(person, imageData, groupsDTO);
+			
 		})
 		.toList();
 		

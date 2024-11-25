@@ -47,8 +47,8 @@ public class PersonService implements DefaultRestMethods<CreatePersonDTO> {
 
 		Person savedPerson = personRepos.save(personToCreate);
 
-		if (data.photo() != null) {
-			Photo photoCreated = photoService.save(data.photo(), data.photoName(), savedPerson.getId(), true);
+		if (data.photoBase64() != null) {
+			Photo photoCreated = photoService.save(data.photoBase64(), savedPerson.getCpf(), savedPerson.getId(), true);
 			dto = new DetailPersonDTO(savedPerson, photoCreated.getImageData());
 		} else
 			dto = new DetailPersonDTO(savedPerson);

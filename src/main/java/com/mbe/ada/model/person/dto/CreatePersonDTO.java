@@ -15,8 +15,7 @@ public record CreatePersonDTO(
 		LocalDate birthDate,
 		Boolean isTeacher,
 		@Nullable Long userId,
-		String photoName,
-		String photo
+		String photoBase64
 		) {
 	
 

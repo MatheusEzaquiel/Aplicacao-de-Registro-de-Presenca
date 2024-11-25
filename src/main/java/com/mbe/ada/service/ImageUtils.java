@@ -2,7 +2,6 @@ package com.mbe.ada.service;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -31,20 +30,19 @@ public class ImageUtils {
         }
 
         
-		if (!file.exists())
-			throw new RuntimeException("Arquivo de Imagem não encontrado " + filename);
-
-		try {
-
+		if (file.exists()) {
+		
 			try (FileInputStream fis = new FileInputStream(file)) {
 				fileData = fis.readAllBytes();
+			} catch (Exception e) {
+				throw new RuntimeException("Erro ao Resgatar Imagem do Diretório");
 			}
 
 			return Base64.getEncoder().encodeToString(fileData);
-
-		} catch (Exception e) {
-			throw new RuntimeException("Erro ao Resgatar Imagem do Diretório");
-		}
+		} else 
+			System.out.println("Arquivo de Imagem não encontrado " + filename);
+		
+		return null;
 
 	}
 	
@@ -100,7 +98,7 @@ public class ImageUtils {
 	}
 	
 	public byte[] convertBase64ToByte (String base64Image, String filename) throws IOException {
-		System.out.println(base64Image);
+
 		// Remove o prefixo "data:image/png;base64," se estiver presente
 		if (base64Image.contains(",")) {
 			base64Image = base64Image.split(",")[1];
@@ -124,7 +122,7 @@ public class ImageUtils {
 	public boolean uploadImage(String filename, byte[] bytes) {
 		
 		// Cria o arquivo no caminho especificado
-		File imageFile = new File(folderPath + File.separator + filename);
+		File imageFile = new File(folderPath + File.separator + referenceImgPath + File.separator + filename);
 		
 		
 		try (FileOutputStream fileOutputStream = new FileOutputStream(imageFile)) {
