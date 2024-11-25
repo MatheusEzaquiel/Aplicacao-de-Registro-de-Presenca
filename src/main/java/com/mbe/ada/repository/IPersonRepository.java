@@ -1,10 +1,9 @@
 package com.mbe.ada.repository;
 
 import java.util.List;
+import java.util.Optional;
 
-import org.hibernate.annotations.processing.SQL;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.mbe.ada.model.person.Person;
@@ -21,5 +20,7 @@ public interface IPersonRepository extends JpaRepository<Person, Long>{
 	List<Person> findByIsTeacherFalseAndIsActiveTrue();
 	
 	List<Person> findByIsTeacherFalseAndIsActiveFalse();
+	
+	Optional<Person> findByCpf(String cpf);
 	
 }
