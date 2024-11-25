@@ -12,15 +12,16 @@ import com.mbe.ada.model.person.Person;
 public interface IPersonRepository extends JpaRepository<Person, Long>{
 	
 	List<Person> findByIsActiveTrue();
+	Optional<Person> findByCpf(String cpf);
 	
+	// Person(Student)
 	List<Person> findByIsTeacherFalse();
-	
-	List<Person> findByIsTeacherTrue();
-	
 	List<Person> findByIsTeacherFalseAndIsActiveTrue();
-	
 	List<Person> findByIsTeacherFalseAndIsActiveFalse();
 	
-	Optional<Person> findByCpf(String cpf);
+	// Person(Teacher)
+	List<Person> findByIsTeacherTrue();
+	List<Person> findByIsTeacherTrueAndIsActiveTrue();
+	
 	
 }
