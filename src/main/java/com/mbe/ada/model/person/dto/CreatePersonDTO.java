@@ -2,9 +2,6 @@ package com.mbe.ada.model.person.dto;
 
 import java.time.LocalDate;
 
-import com.mbe.ada.model.person.Person;
-import com.mbe.ada.model.photo.Photo;
-
 import jakarta.annotation.Nullable;
 
 public record CreatePersonDTO(

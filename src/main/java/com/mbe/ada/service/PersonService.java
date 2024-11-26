@@ -74,7 +74,18 @@ public class PersonService implements DefaultRestMethods<CreatePersonDTO> {
 
 	@Override
 	public ResponseDTO delete(Long id) {
-		return null;
+
+		Optional<Person> personOpt = personRepos.findById(id);
+
+		if (personOpt.isEmpty())
+			return new ResponseDTO(HttpStatus.NOT_FOUND.value(), "Pessoa não encontrada", null);
+
+		Person personToDelete = personOpt.get();
+		personToDelete.setIsActive(false);
+		personRepos.save(personToDelete);
+		
+		return new ResponseDTO(HttpStatus.OK.value(), "Pessoa Desativada", null);
+        
 	}
 
 }

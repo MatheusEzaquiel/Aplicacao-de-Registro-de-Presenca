@@ -1,9 +1,7 @@
 package com.mbe.ada.model.person.dto;
 
-import java.time.LocalDate;
 import java.util.List;
 
-import com.mbe.ada.model.group.Group;
 import com.mbe.ada.model.group.dto.BasicGroupDTO;
 import com.mbe.ada.model.person.Person;
 
@@ -13,7 +11,7 @@ public record DetailPersonDTO(
 		String lastname,
 		String email,
 		String cpf,
-		LocalDate birthDate,
+		String birthDate,
 		Boolean isTeacher,
 		Long userId,
 		String photo,
@@ -21,15 +19,15 @@ public record DetailPersonDTO(
 		) {
 	
 	public DetailPersonDTO(Person p) {
-		this(p.getId(), p.getName(), p.getLastname(), p.getEmail(), p.getCpf(), p.getBirthDate(), p.getIsTeacher(), p.getUserId(), null, null);
+		this(p.getId(), p.getName(), p.getLastname(), p.getEmail(), p.getCpf(), p.getBirthDate().toString(), p.getIsTeacher(), p.getUserId(), null, null);
 	}
 	
 	public DetailPersonDTO(Person p, String photo) {
-		this(p.getId(), p.getName(), p.getLastname(), p.getEmail(), p.getCpf(), p.getBirthDate(), p.getIsTeacher(), p.getUserId(), photo, null);
+		this(p.getId(), p.getName(), p.getLastname(), p.getEmail(), p.getCpf(), p.getBirthDate().toString(), p.getIsTeacher(), p.getUserId(), photo, null);
 	}
 	
 	public DetailPersonDTO(Person p, String photo, List<BasicGroupDTO> groups) {
-		this(p.getId(), p.getName(), p.getLastname(), p.getEmail(), p.getCpf(), p.getBirthDate(), p.getIsTeacher(), p.getUserId(), photo, groups);
+		this(p.getId(), p.getName(), p.getLastname(), p.getEmail(), p.getCpf(), p.getBirthDate().toString(), p.getIsTeacher(), p.getUserId(), photo, groups);
 	}
 
 

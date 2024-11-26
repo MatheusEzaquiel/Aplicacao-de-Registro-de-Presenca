@@ -1,11 +1,9 @@
 package com.mbe.ada.controller;
 
+import com.mbe.ada.model.auth.dto.ResponseDTO;
 import com.mbe.ada.model.group.Group;
 import com.mbe.ada.model.group.dto.CreateGroupDTO;
 import com.mbe.ada.model.group.dto.DetailGroupDTO;
-import com.mbe.ada.model.person.Person;
-import com.mbe.ada.model.person.dto.PersonDTO;
-import com.mbe.ada.model.user.User;
 import com.mbe.ada.service.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -45,40 +43,28 @@ public class GroupController{
     }
     
     @PatchMapping("/{id}")
-    public ResponseEntity<Group> update(@PathVariable Long id, @RequestBody Group data) {
-    	Group groupUpdated = groupService.updateGroup(id, data);
-        return new ResponseEntity<>(groupUpdated, HttpStatus.OK);
+    public ResponseEntity<ResponseDTO> update(@PathVariable Long id, @RequestBody Group data) {
+    	ResponseDTO response = groupService.updateByID(id, data);
+    	return new ResponseEntity<ResponseDTO>(response, HttpStatus.valueOf(response.status()));
     }
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Group> delete(@PathVariable Long id) {
-		Group group = groupService.deleteById(id);
-		
-		return ResponseEntity.ok(group);
+	public ResponseEntity<ResponseDTO> delete(@PathVariable Long id) {
+		ResponseDTO response = groupService.deleteById(id);
+		return new ResponseEntity<ResponseDTO>(response, HttpStatus.valueOf(response.status()));
 	}
 
     // Endpoint para adicionar um usuário a um grupo
     @PostMapping("/{groupId}/person/{personId}")
-    public ResponseEntity<String> addUserToGroup(@PathVariable Long groupId, @PathVariable Long personId) {
-        Optional<Group> group = groupService.addUserToGroup(groupId, personId);
-        if (group.isPresent()) {
-            return ResponseEntity.ok("Usuário adicionado ao grupo com sucesso.");
-        } else {
-            return ResponseEntity.badRequest().body("Grupo ou usuário não encontrado.");
-        }
+    public ResponseEntity<ResponseDTO> addPerson(@PathVariable Long groupId, @PathVariable Long personId) {
+    	ResponseDTO response = groupService.addPersonToGroup(groupId, personId);
+        return new ResponseEntity<ResponseDTO>(response, HttpStatus.valueOf(response.status()));
     }
     
     @DeleteMapping("/{groupId}/person/{personId}")
-    public ResponseEntity<String> removeUserToGroup(@PathVariable Long groupId, @PathVariable Long personId) {
-    	
-        Integer deletedRows = groupService.removeUserFromGroup(groupId, personId);
-        
-        if (deletedRows > 0) {
-            return ResponseEntity.ok("Usuário removido do grupo com sucesso.");
-        } else {
-            return ResponseEntity.badRequest().body("Grupo ou usuário não encontrado.");
-        }
-        
+    public ResponseEntity<ResponseDTO> removePerson(@PathVariable Long groupId, @PathVariable Long personId) {
+        ResponseDTO response = groupService.removePersonFromGroup(groupId, personId);
+        return new ResponseEntity<ResponseDTO>(response, HttpStatus.valueOf(response.status()));
     }
 
 }

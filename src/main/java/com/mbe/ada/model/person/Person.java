@@ -8,7 +8,7 @@ import java.util.Set;
 
 import com.mbe.ada.model.group.Group;
 import com.mbe.ada.model.person.dto.CreatePersonDTO;
-import com.mbe.ada.model.person.dto.PersonDTO;
+import com.mbe.ada.model.person.dto.UpdatePersonDTO;
 import com.mbe.ada.model.photo.Photo;
 
 import jakarta.persistence.CascadeType;
@@ -214,7 +214,7 @@ public class Person {
 	}
 
 
-	public Person updateValues(PersonDTO data) {
+	public Person updateValues(UpdatePersonDTO data) {
 		
 		if (data.name() != null) {
             this.name = data.name();

@@ -23,6 +23,7 @@ import com.mbe.ada.model.person.Person;
 import com.mbe.ada.model.person.dto.CreatePersonDTO;
 import com.mbe.ada.model.person.dto.DetailPersonDTO;
 import com.mbe.ada.model.person.dto.PersonDTO;
+import com.mbe.ada.model.person.dto.UpdatePersonDTO;
 import com.mbe.ada.model.user.User;
 import com.mbe.ada.repository.IGroupRepository;
 import com.mbe.ada.repository.IPersonRepository;
@@ -208,7 +209,7 @@ public class PersonController {
     }
     
     @PatchMapping("/{id}")
-    public ResponseEntity<PersonDTO> update(@PathVariable Long id, @RequestBody PersonDTO data) {
+    public ResponseEntity<PersonDTO> update(@PathVariable Long id, @RequestBody UpdatePersonDTO data) {
     	
         Optional<Person> personToUpdt = personRepos.findById(id);
         
@@ -235,18 +236,11 @@ public class PersonController {
     }
     
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<ResponseDTO> delete(@PathVariable Long id) {
     	
-        Optional<Person> personOpt = personRepos.findById(id);
+    	ResponseDTO response = personService.delete(id);
+        return new ResponseEntity<ResponseDTO>(response, HttpStatusCode.valueOf(response.status()));
         
-        if (personOpt.isEmpty())
-        	return new ResponseEntity("Pessoa não encontrada", HttpStatus.NOT_FOUND);
-
-        Person personToDelete = personOpt.get();
-        personToDelete.setIsActive(false);
-        personRepos.save(personToDelete);
-
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }
