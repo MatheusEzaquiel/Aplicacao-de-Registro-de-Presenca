@@ -5,6 +5,10 @@ import java.io.FileWriter;
 import java.util.List;
 import java.util.Map;
 import com.google.gson.reflect.TypeToken;
+
+import br.com.caelum.stella.ValidationMessage;
+import br.com.caelum.stella.validation.CPFValidator;
+
 import com.google.gson.Gson;
 import java.lang.reflect.Type;
 
@@ -50,7 +54,7 @@ public class AdaUtils {
 	 *  @param rows
 	 *  
 	 *  
-	 *  @matheus.bezerra
+	 *  @author matheus.bezerra
 	 *  */
     public static Map<String, Object> jsonToMap(String json) {
         // Criação do objeto Gson
@@ -62,4 +66,24 @@ public class AdaUtils {
         // Convertendo o JSON para um Map
         return gson.fromJson(json, type);
     }
+    
+    /**
+     * 
+     * CPF Validator
+     * 
+     * @author matheus.bezerra
+     * */
+    
+	public static boolean isValidCPF(String cpf) {
+		CPFValidator cpfValidator = new CPFValidator();
+		List<ValidationMessage> erros = cpfValidator.invalidMessagesFor(cpf);
+		
+		if(erros.size() > 0) {
+			System.out.println(erros);
+			return false;
+		} else {
+			return true; 
+		}
+	}
+	
 }

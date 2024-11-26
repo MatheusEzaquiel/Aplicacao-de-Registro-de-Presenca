@@ -1,6 +1,5 @@
 package com.mbe.ada.model.person;
 
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -51,10 +50,9 @@ public class Person {
 	@Column(name = "email", length = 100, unique = true)
 	private String email;
 
-	@Column(name = "cpf", length = 11, unique = true)
+	@Column(name = "cpf", length = 14, unique = true)
 	@NotNull
 	@NotEmpty
-	@Size(min = 11)
 	private String cpf;
 
 	@Column(name = "birth_date")

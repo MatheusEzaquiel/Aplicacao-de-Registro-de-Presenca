@@ -14,6 +14,7 @@ import com.mbe.ada.model.photo.Photo;
 import com.mbe.ada.model.user.User;
 import com.mbe.ada.repository.IPersonRepository;
 import com.mbe.ada.repository.IUserRepository;
+import com.mbe.ada.utils.AdaUtils;
 import com.mbe.ada.utils.DefaultRestMethods;
 
 @Service
@@ -44,6 +45,10 @@ public class PersonService implements DefaultRestMethods<CreatePersonDTO> {
 						null);
 
 		}
+		
+		// CPF Validation
+		if(!AdaUtils.isValidCPF(data.cpf()))
+			return new ResponseDTO(HttpStatus.BAD_REQUEST.value(), "Validação: Este CPF não é Válido", false);
 
 		Person savedPerson = personRepos.save(personToCreate);
 

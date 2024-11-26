@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -180,7 +181,7 @@ public class PersonController {
 	public ResponseEntity<ResponseDTO> create(@RequestBody CreatePersonDTO data) {
 		
 		ResponseDTO response = personService.save(data);
-        return new ResponseEntity<ResponseDTO>(response, HttpStatus.CREATED);
+        return new ResponseEntity<ResponseDTO>(response, HttpStatusCode.valueOf(response.status()));
         
     }
     
