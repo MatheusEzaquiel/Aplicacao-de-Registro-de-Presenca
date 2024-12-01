@@ -45,9 +45,18 @@ public class PersonService implements DefaultRestMethods<CreatePersonDTO> {
 						null);
 
 		}
-		
+
+		// E-mail Validation
+		Optional<Person> personOptEmail = personRepos.findByEmail(data.email());
+		if (personOptEmail.isPresent())
+			return new ResponseDTO(HttpStatus.CONFLICT.value(), "Validação: Este E-mail já é utilizado", null);
+
 		// CPF Validation
-		if(!AdaUtils.isValidCPF(data.cpf()))
+		Optional<Person> personOptCPF = personRepos.findByCpf(data.cpf());
+		if (personOptCPF.isPresent())
+			return new ResponseDTO(HttpStatus.CONFLICT.value(), "Validação: Este CPF já é utilizado", null);
+
+		if (!AdaUtils.isValidCPF(data.cpf()))
 			return new ResponseDTO(HttpStatus.BAD_REQUEST.value(), "Validação: Este CPF não é Válido", false);
 
 		Person savedPerson = personRepos.save(personToCreate);

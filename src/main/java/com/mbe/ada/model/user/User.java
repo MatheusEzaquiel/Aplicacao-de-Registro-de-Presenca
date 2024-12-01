@@ -51,7 +51,7 @@ public class User {
 	@Size(min = 8, max = 150)
 	private String password;
 
-	@Column(name = "is_active" )
+	@Column(name = "isactive" )
 	private Boolean isActive;
 
 	@Column(name = "created_at", updatable = false)
