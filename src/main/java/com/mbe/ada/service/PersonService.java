@@ -1,28 +1,33 @@
 package com.mbe.ada.service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.mbe.ada.model.auth.dto.ResponseDTO;
+import com.mbe.ada.model.group.dto.BasicGroupDTO;
 import com.mbe.ada.model.person.Person;
 import com.mbe.ada.model.person.dto.CreatePersonDTO;
 import com.mbe.ada.model.person.dto.DetailPersonDTO;
+import com.mbe.ada.model.person.dto.PersonDTO;
+import com.mbe.ada.model.person.dto.UpdatePersonDTO;
 import com.mbe.ada.model.photo.Photo;
 import com.mbe.ada.model.user.User;
 import com.mbe.ada.recognitionApi.RecognitionAPI;
 import com.mbe.ada.repository.IPersonRepository;
 import com.mbe.ada.repository.IUserRepository;
 import com.mbe.ada.utils.AdaUtils;
-import com.mbe.ada.utils.DefaultRestMethods;
 
 @Service
-public class PersonService implements DefaultRestMethods<CreatePersonDTO> {
+public class PersonService {
 
 	@Autowired
 	IPersonRepository personRepos;
@@ -31,7 +36,32 @@ public class PersonService implements DefaultRestMethods<CreatePersonDTO> {
 	IUserRepository userRepos;
 
 	@Autowired
-	PhotoService photoService;
+	AttachmentService attachmentService;
+
+	@Autowired
+	ImageUtils imageUtils;
+	
+
+	public ResponseDTO get(Long id) {
+		 
+    	Optional<Person> personOpt = personRepos.findById(id);
+        
+        if (personOpt.isEmpty()) 
+        	return new ResponseDTO(HttpStatus.NOT_FOUND.value(), "Pessoa não encontrada", null);
+        
+        
+        String photoBase64 = imageUtils.getImageBase64(personOpt.get().getCpf(), Person.class.toString());
+        
+        
+        List<BasicGroupDTO> groupsDTO = personOpt.get().getGroups()
+        		.stream()
+        		.map(group -> new BasicGroupDTO(group))
+				.collect(Collectors.toList());
+	
+		DetailPersonDTO detailPersonDTO = new DetailPersonDTO(personOpt.get(), photoBase64, groupsDTO);
+		
+        return new ResponseDTO(HttpStatus.OK.value(), "Usuário Retornado", detailPersonDTO);
+	}
 
 	public ResponseDTO save(CreatePersonDTO data) {
 
@@ -69,7 +99,7 @@ public class PersonService implements DefaultRestMethods<CreatePersonDTO> {
 		if (!AdaUtils.isValidCPF(data.cpf()))
 			return new ResponseDTO(HttpStatus.BAD_REQUEST.value(), "Validação: Este CPF não é Válido", false);
 		
-		// Remove o prefixo "data:image/png;base64," se estiver presente
+		// Remove o prefixo "data:image/png;base64"
 		photoBase64 = data.photoBase64().split(",")[1];
 		String jsonResponse = recognitionAPI.getEncodingFromImage(photoBase64);
 		ResponseDTO responseAPI = gson.fromJson(jsonResponse, ResponseDTO.class);
@@ -80,7 +110,7 @@ public class PersonService implements DefaultRestMethods<CreatePersonDTO> {
 		Person savedPerson = personRepos.save(personToCreate);
 
 		if (data.photoBase64() != null) {
-			Photo photoCreated = photoService.save(data.photoBase64(), savedPerson.getCpf(), savedPerson.getId(), true);
+			Photo photoCreated = attachmentService.save(data.photoBase64(), savedPerson.getCpf(), savedPerson.getId(), true);
 			dto = new DetailPersonDTO(savedPerson, photoCreated.getImageData());
 		} else
 			dto = new DetailPersonDTO(savedPerson);
@@ -89,17 +119,38 @@ public class PersonService implements DefaultRestMethods<CreatePersonDTO> {
 
 	}
 
-	@Override
 	public ResponseDTO list() {
 		return null;
 	}
 
-	@Override
-	public ResponseDTO update(Long id) {
-		return null;
+	public ResponseDTO update(Long id, UpdatePersonDTO data) {
+
+        Optional<Person> personToUpdt = personRepos.findById(id);
+        
+        if (personToUpdt.isEmpty())
+        	return new ResponseDTO(HttpStatus.NOT_FOUND.value(), "Pessoa não encontrada", null);
+        
+        Person personToUpdate = personToUpdt.get();
+        
+
+    	// Verify User existence
+        if(data.userId() != null && data.userId()> 0) {
+        	
+        	Optional<User> user = userRepos.findById(data.userId());
+        	
+        	if(user.isEmpty())
+        		return new ResponseDTO(HttpStatus.NOT_FOUND.value(), "Usuário Relacionado não encontrado", null);
+        }
+        
+        personToUpdate.updateValues(data);
+        Person updatedPerson = personRepos.save(personToUpdate);
+        if (data.photoBase64() != null) {
+        	attachmentService.save(data.photoBase64(), updatedPerson.getCpf(), updatedPerson.getId(), true);
+        }
+        DetailPersonDTO detailPersonDTO = new DetailPersonDTO(updatedPerson, ImageUtils.getImageBase64(updatedPerson.getCpf(), User.class.toString()));
+        return new ResponseDTO(HttpStatus.OK.value(), "Usuário Atualizado", detailPersonDTO);
 	}
 
-	@Override
 	public ResponseDTO delete(Long id) {
 
 		Optional<Person> personOpt = personRepos.findById(id);

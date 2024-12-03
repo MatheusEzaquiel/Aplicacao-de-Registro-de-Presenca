@@ -1,6 +1,7 @@
 package com.mbe.ada.service;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,13 +16,13 @@ import com.mbe.ada.repository.IPhotoRepository;
 import jakarta.transaction.Transactional;
 
 @Service
-public class PhotoService {
+public class AttachmentService {
 
 	@Autowired
 	IPhotoRepository photoRepos;
 	
 	@Autowired
-	ImageUtils imageService;
+	ImageUtils imageUtils;
 	
 	@Autowired
 	IPersonRepository personRepos;
@@ -55,12 +56,14 @@ public class PhotoService {
         
 		try {
 			
-			byte[] imageData = imageService.convertBase64ToByte(fileBase64, filename);
-			if(!imageService.uploadImage(filename, imageData))
+			//byte[] imageData = imageService.convertBase64ToByte(fileBase64, filename);
+			if(!imageUtils.uploadImage(filename, fileBase64))
 				throw new RuntimeException("Erro ao fazer upload da imagem");
 			  
-	       
-	        Photo photoToCreate = new Photo(filename, fileBase64, person.get(), isDefault);
+			/*String oldImgBase64 = ImageUtils.getImageBase64(person.get().getCpf(), Person.class.toString());
+			if(oldImgBase64 != null)*/
+			//ImageUtils.deleteFile(person.get().getCpf());
+	        Photo photoToCreate = new Photo(filename + LocalDateTime.now(), fileBase64, person.get(), isDefault);
 	        
 	        /*
 	        // Caso não seja a foto de referencia, não salvar no BD

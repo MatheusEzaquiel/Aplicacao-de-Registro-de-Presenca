@@ -15,4 +15,6 @@ public interface IPhotoRepository extends JpaRepository<Photo, Long> {
 
 	@Query("SELECT new com.mbe.ada.model.photo.Photo(p.id, p.imageData) FROM Photo p WHERE p.person.id = :personId")
 	Optional<Photo> findByPersonId(@Param("personId") Long personId);
+	
+	
 }

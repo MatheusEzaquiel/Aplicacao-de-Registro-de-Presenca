@@ -28,9 +28,9 @@ import com.mbe.ada.model.user.User;
 import com.mbe.ada.repository.IGroupRepository;
 import com.mbe.ada.repository.IPersonRepository;
 import com.mbe.ada.repository.IUserRepository;
+import com.mbe.ada.service.AttachmentService;
 import com.mbe.ada.service.ImageUtils;
 import com.mbe.ada.service.PersonService;
-import com.mbe.ada.service.PhotoService;
 
 @RestController
 @RequestMapping(value = "/persons")
@@ -43,7 +43,7 @@ public class PersonController {
 	IUserRepository userRepos;
 	
 	@Autowired
-	PhotoService photoService;
+	AttachmentService attachmentService;
 	
 	@Autowired 
 	IGroupRepository groupRepos;
@@ -51,7 +51,6 @@ public class PersonController {
 	@Autowired
 	PersonService personService;
 	
-
 	@Autowired
 	ImageUtils imageUtils;
 	
@@ -96,7 +95,7 @@ public class PersonController {
 
 		List<DetailPersonDTO> dataDTO = data.stream().map(person -> {
 
-			String imageData = photoService.getImageDataByPersonId(person.getId());
+			String imageData = attachmentService.getImageDataByPersonId(person.getId());
 
 			List<BasicGroupDTO> groupsDTO = person.getGroups().stream().map(group -> new BasicGroupDTO(group))
 					.collect(Collectors.toList());
@@ -116,7 +115,7 @@ public class PersonController {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		
 		List<DetailPersonDTO> dataDTO = data.stream().map(person -> {
-			String imageData = photoService.getImageDataByPersonId(person.getId());
+			String imageData = attachmentService.getImageDataByPersonId(person.getId());
 			return new DetailPersonDTO(person, imageData);
 		}).toList();
 		
@@ -133,7 +132,7 @@ public class PersonController {
 
 		List<DetailPersonDTO> dataDTO = data.stream().map(person -> {
 
-			String imageData = photoService.getImageDataByPersonId(person.getId());
+			String imageData = attachmentService.getImageDataByPersonId(person.getId());
 
 			List<BasicGroupDTO> groupsDTO = person.getGroups().stream().map(group -> new BasicGroupDTO(group))
 					.collect(Collectors.toList());
@@ -180,64 +179,24 @@ public class PersonController {
 	
 	@PostMapping
 	public ResponseEntity<ResponseDTO> create(@RequestBody CreatePersonDTO data) {
-		
 		ResponseDTO response = personService.save(data);
         return new ResponseEntity<ResponseDTO>(response, HttpStatusCode.valueOf(response.status()));
-        
     }
     
     @GetMapping("/{id}")
-    public ResponseEntity<DetailPersonDTO> get(@PathVariable Long id) {
-        
-    	Optional<Person> personOpt = personRepos.findById(id);
-        
-        if (personOpt.isEmpty()) 
-        	return new ResponseEntity("Pessoa não encontrada", HttpStatus.NOT_FOUND);
-        
-        
-        String imageData = photoService.getImageDataByPersonId(id);
-        
-        
-        List<BasicGroupDTO> groupsDTO = personOpt.get().getGroups()
-        		.stream()
-        		.map(group -> new BasicGroupDTO(group))
-				.collect(Collectors.toList());
-	
-		DetailPersonDTO dto = new DetailPersonDTO(personOpt.get(), imageData, groupsDTO);
-		
-        return new ResponseEntity<DetailPersonDTO>(dto, HttpStatus.OK);
+    public ResponseEntity<ResponseDTO> get(@PathVariable Long id) {
+    	ResponseDTO response = personService.get(id);
+        return new ResponseEntity<ResponseDTO>(response, HttpStatusCode.valueOf(response.status()));  
     }
     
     @PatchMapping("/{id}")
-    public ResponseEntity<PersonDTO> update(@PathVariable Long id, @RequestBody UpdatePersonDTO data) {
-    	
-        Optional<Person> personToUpdt = personRepos.findById(id);
-        
-        if (personToUpdt.isEmpty())
-        	return new ResponseEntity("Pessoa não encontrada", HttpStatus.NOT_FOUND);
-        
-        Person personToUpdate = personToUpdt.get();
-        
-
-    	// Verify User existence
-        if(data.userId() != null && data.userId()> 0) {
-        	
-        	Optional<User> user = userRepos.findById(data.userId());
-        	
-        	if(user.isEmpty())
-        		return new ResponseEntity("Usuário relacionado à Pessoa não encontrado", HttpStatus.NOT_FOUND);	
-        	
-        }
-        
-        personToUpdate.updateValues(data);
-        Person updatedPerson = personRepos.save(personToUpdate);
-        PersonDTO updatedDTO = new PersonDTO(updatedPerson);
-        return new ResponseEntity<>(updatedDTO, HttpStatus.OK);
+    public ResponseEntity<ResponseDTO> update(@PathVariable Long id, @RequestBody UpdatePersonDTO data) {
+    	ResponseDTO response = personService.update(id, data);
+        return new ResponseEntity<ResponseDTO>(response, HttpStatusCode.valueOf(response.status()));
     }
     
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseDTO> delete(@PathVariable Long id) {
-    	
     	ResponseDTO response = personService.delete(id);
         return new ResponseEntity<ResponseDTO>(response, HttpStatusCode.valueOf(response.status()));
         

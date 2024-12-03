@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.UUID;
 
@@ -52,21 +54,50 @@ public class ImageUtils {
 
 	}
 	
-	public String saveImage(byte[] fileData, String filename) throws IOException {
+
+	public boolean uploadImage(String filename, String fileBase64) {
 		
-		String extension = getExtensionFile(filename);
+		byte[] bytes = null;
 		
-		String fileNameUUID = UUID.randomUUID().toString(); 
-		String newFileName = fileNameUUID + "." + extension;
-		File file = new File(folderPath + File.separator + newFileName);
-		
-		try (FileOutputStream fos = new FileOutputStream(file)) {
-			fos.write(fileData);
+		try {
+			bytes = convertBase64ToByte(fileBase64);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		
-		return newFileName;
+		// Cria o arquivo no caminho especificado
+		File imageFile = new File(folderPath + File.separator + referenceImgPath + File.separator + filename);
 		
+		
+		try (FileOutputStream fileOutputStream = new FileOutputStream(imageFile)) {
+			
+			fileOutputStream.write(bytes);
+			
+			return true;
+		} catch (Exception e) {
+			throw new RuntimeException("Error to upload file");
+		}
+
 	}
+	
+	 public static void deleteFile(String filename) {
+		 
+		 	String filePath = folderPath + File.separator + referenceImgPath + File.separator + filename;
+	        Path path = Paths.get(filePath);
+	        
+	        try {
+	            // Verifica se o arquivo existe antes de tentar apagá-lo
+	            if (Files.exists(path)) {
+	                Files.delete(path);
+	                System.out.println("Arquivo apagado com sucesso: " + filePath);
+	            } else {
+	                System.out.println("Arquivo não encontrado: " + filePath);
+	            }
+	        } catch (IOException e) {
+	            System.err.println("Erro ao apagar o arquivo: " + e.getMessage());
+	        }
+	    }
+
 	
 	public byte[] converFileToBytes(File file) throws IOException {
 		
@@ -97,7 +128,7 @@ public class ImageUtils {
 		return part[0];
 	}
 	
-	public byte[] convertBase64ToByte (String base64Image, String filename) throws IOException {
+	public byte[] convertBase64ToByte (String base64Image) throws IOException {
 
 		// Remove o prefixo "data:image/png;base64," se estiver presente
 		if (base64Image.contains(",")) {
@@ -119,21 +150,5 @@ public class ImageUtils {
 		}
 	}
 	
-	public boolean uploadImage(String filename, byte[] bytes) {
-		
-		// Cria o arquivo no caminho especificado
-		File imageFile = new File(folderPath + File.separator + referenceImgPath + File.separator + filename);
-		
-		
-		try (FileOutputStream fileOutputStream = new FileOutputStream(imageFile)) {
-			
-			fileOutputStream.write(bytes);
-			
-			return true;
-		} catch (Exception e) {
-			throw new RuntimeException("Error to upload file");
-		}
-
-	}
 
 }

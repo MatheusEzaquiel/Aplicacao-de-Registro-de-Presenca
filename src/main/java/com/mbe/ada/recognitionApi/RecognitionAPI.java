@@ -44,10 +44,6 @@ public class RecognitionAPI {
 					.build();
 			response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-			// Exibe o status e o corpo da resposta
-			System.out.println("Status code: " + response.statusCode());
-			System.out.println("Resposta: " + response.body());
-
 			return response.body();
 				
 		} catch (IOException e) {

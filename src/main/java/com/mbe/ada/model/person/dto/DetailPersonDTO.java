@@ -14,7 +14,7 @@ public record DetailPersonDTO(
 		String birthDate,
 		Boolean isTeacher,
 		Long userId,
-		String photo,
+		String photoBase64,
 		List<BasicGroupDTO> groups
 		) {
 	

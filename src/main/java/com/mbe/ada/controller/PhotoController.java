@@ -55,7 +55,7 @@ public class PhotoController {
 
         return new ResponseEntity<>(dataDTO, HttpStatus.OK);
     }
-
+/*
     @PostMapping(consumes = "multipart/form-data")
     public ResponseEntity<Photo> create(
     		@RequestParam("file") MultipartFile file,
@@ -82,7 +82,7 @@ public class PhotoController {
         
         Photo savedPhoto = photoRepository.save(photoToCreate);
         return new ResponseEntity<>(savedPhoto, HttpStatus.CREATED);
-    }
+    }*/
 
     @GetMapping("/{id}")
     public ResponseEntity get(@PathVariable Long id) {
