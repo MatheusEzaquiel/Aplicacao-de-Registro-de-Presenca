@@ -6,12 +6,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.mbe.ada.model.auth.dto.ResponseDTO;
 import com.mbe.ada.model.person.Person;
 import com.mbe.ada.model.person.dto.CreatePersonDTO;
 import com.mbe.ada.model.person.dto.DetailPersonDTO;
 import com.mbe.ada.model.photo.Photo;
 import com.mbe.ada.model.user.User;
+import com.mbe.ada.recognitionApi.RecognitionAPI;
 import com.mbe.ada.repository.IPersonRepository;
 import com.mbe.ada.repository.IUserRepository;
 import com.mbe.ada.utils.AdaUtils;
@@ -32,6 +36,12 @@ public class PersonService implements DefaultRestMethods<CreatePersonDTO> {
 	public ResponseDTO save(CreatePersonDTO data) {
 
 		DetailPersonDTO dto;
+		RecognitionAPI recognitionAPI = new RecognitionAPI(); 
+		Gson gson = new Gson();
+
+		String photoBase64;
+		
+		
 		
 		Person personToCreate = new Person(data);
 
@@ -58,7 +68,15 @@ public class PersonService implements DefaultRestMethods<CreatePersonDTO> {
 
 		if (!AdaUtils.isValidCPF(data.cpf()))
 			return new ResponseDTO(HttpStatus.BAD_REQUEST.value(), "Validação: Este CPF não é Válido", false);
-
+		
+		// Remove o prefixo "data:image/png;base64," se estiver presente
+		photoBase64 = data.photoBase64().split(",")[1];
+		String jsonResponse = recognitionAPI.getEncodingFromImage(photoBase64);
+		ResponseDTO responseAPI = gson.fromJson(jsonResponse, ResponseDTO.class);
+		
+		if(responseAPI.data() != null)
+			personToCreate.setEncoding(responseAPI.data().toString());
+		
 		Person savedPerson = personRepos.save(personToCreate);
 
 		if (data.photoBase64() != null) {

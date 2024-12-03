@@ -61,6 +61,9 @@ public class Person {
 	@Column(name = "is_teacher")
 	private Boolean isTeacher;
 
+	@Column(name = "encoding")
+	private String encoding;
+	
 	@Column(name = "user_id")
 	private Long userId;
 
@@ -82,7 +85,8 @@ public class Person {
 	public Person(){}
 
 	
-	public Person(Long id, String name, String lastname, String email, String cpf, LocalDate birthDate, Boolean isTeacher, Long userId,
+	public Person(Long id, String name, String lastname, String email, String cpf, LocalDate birthDate,
+			Boolean isTeacher, String encoding, Long userId,
 			Boolean isActive, LocalDateTime createdAt, LocalDateTime updatedAt) {
 		this.id = id;
 		this.name = name;
@@ -172,6 +176,15 @@ public class Person {
 	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
+
+	public String getEncoding() {
+		return encoding;
+	}
+
+	public void setEncoding(String encoding) {
+		this.encoding = encoding;
+	}
+
 
 	public Boolean getIsActive() {
 		return isActive;

@@ -22,12 +22,12 @@ import com.mbe.ada.model.attendance.dto.ListAttendanceDTO;
 import com.mbe.ada.model.attendance.dto.ResponseAttendanceDTO;
 import com.mbe.ada.model.auth.dto.ResponseDTO;
 import com.mbe.ada.model.person.Person;
+import com.mbe.ada.recognitionApi.RecognitionAPIResponseDTO;
 import com.mbe.ada.repository.IAttendanceRepository;
 import com.mbe.ada.repository.IPersonRepository;
 import com.mbe.ada.repository.IPhotoRepository;
 import com.mbe.ada.service.APIService;
 import com.mbe.ada.service.ImageUtils;
-import com.mbe.ada.service.RecognitionAPIResponseDTO;
 
 import reactor.core.publisher.Mono;
 

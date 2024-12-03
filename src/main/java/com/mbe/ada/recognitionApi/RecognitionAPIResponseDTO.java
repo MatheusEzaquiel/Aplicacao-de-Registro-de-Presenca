@@ -1,4 +1,4 @@
-package com.mbe.ada.service;
+package com.mbe.ada.recognitionApi;
 
 public record RecognitionAPIResponseDTO(boolean identified, String name, String refereceImagePath) {
 
