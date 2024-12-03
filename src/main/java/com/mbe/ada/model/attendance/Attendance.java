@@ -28,9 +28,12 @@ public class Attendance {
 
     @Column(name = "photo_name", unique = true)
     private String photoName;
-    
-    @Column(name = "register_date", unique = true)
+
+    @Column(name = "register_date")
     private LocalDateTime registerDate;
+    
+    @Column(name = "is_late")
+    private Boolean isLate;
 
     @Column(name = "is_active")
     private Boolean isActive = true;
@@ -43,13 +46,14 @@ public class Attendance {
 
     public Attendance() {}
     
-    public Attendance(Long id, Person person, String photoName, LocalDateTime registerDate, Boolean isActive,
+    public Attendance(Long id, Person person, String photoName, LocalDateTime registerDate, Boolean isLate, Boolean isActive,
 			LocalDateTime createdAt, LocalDateTime updatedAt) {
 		super();
 		this.id = id;
 		this.person = person;
 		this.photoName = photoName;
 		this.registerDate = registerDate;
+		this.isLate = isLate;
 		this.isActive = isActive;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
@@ -94,6 +98,14 @@ public class Attendance {
 
 	public void setRegisterDate(LocalDateTime registerDate) {
 		this.registerDate = registerDate;
+	}
+
+	public Boolean getIsLate() {
+		return isLate;
+	}
+
+	public void setIsLate(Boolean isLate) {
+		this.isLate = isLate;
 	}
 
 	public Boolean getIsActive() {

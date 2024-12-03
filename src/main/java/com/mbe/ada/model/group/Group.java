@@ -3,6 +3,8 @@ package com.mbe.ada.model.group;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import com.mbe.ada.model.group.dto.CreateGroupDTO;
@@ -344,5 +346,26 @@ public class Group {
 	    return this;
 	}
     
+	public List<Integer> daysOfWeekClass() {
+		
+		List<Integer>days = new ArrayList<Integer>();
+		
+		if(this.monday)
+			days.add(1);
+		else if(this.tuesday)
+			days.add(2);
+		else if(this.wednesday)
+			days.add(3);
+		else if(this.thursday)
+			days.add(4);
+		else if(this.friday)
+			days.add(5);
+		else if(this.saturday)
+			days.add(6);
+		else if(this.sunday);
+			days.add(7);
+			
+		return days;
+	}
 }
 	

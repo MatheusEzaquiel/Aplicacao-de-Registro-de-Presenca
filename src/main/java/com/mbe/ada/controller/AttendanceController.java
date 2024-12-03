@@ -1,7 +1,12 @@
 package com.mbe.ada.controller;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Period;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +26,7 @@ import com.mbe.ada.model.attendance.dto.CreateAttendanceDTO;
 import com.mbe.ada.model.attendance.dto.ListAttendanceDTO;
 import com.mbe.ada.model.attendance.dto.ResponseAttendanceDTO;
 import com.mbe.ada.model.auth.dto.ResponseDTO;
+import com.mbe.ada.model.group.Group;
 import com.mbe.ada.model.person.Person;
 import com.mbe.ada.recognitionApi.RecognitionAPIResponseDTO;
 import com.mbe.ada.repository.IAttendanceRepository;
@@ -113,7 +119,6 @@ public class AttendanceController {
         if (person.isEmpty()) {
             return Mono.just(new ResponseEntity<>(new ResponseDTO(404, "Pessoa relacionada não encontrada", null), HttpStatus.NOT_FOUND));
         }
-
         
         if (photoBase64 == null || photoBase64.isEmpty()) {
             return Mono.just(new ResponseEntity<>(new ResponseDTO(400, "Imagem base64 não fornecida", null), HttpStatus.BAD_REQUEST));
@@ -146,6 +151,31 @@ public class AttendanceController {
                      
                      // Register attendance
                      Attendance attendanceToCreate = new Attendance(person.get(), UUID.randomUUID().toString());
+                     Set<Group> groups = attendanceToCreate.getPerson().getGroups();
+                     
+                     // Logic to determine if the person is late
+                     LocalDateTime loginLDT = attendanceToCreate.getRegisterDate();
+                     LocalTime loginLT = LocalTime.of(loginLDT.getHour(), loginLDT.getMinute(), loginLDT.getSecond());
+                     
+                   
+                     for(Group currentGroup : groups) {
+                    	 
+                    	 LocalTime maxTime = currentGroup.getInitialTime().plusMinutes(20); //07:20:00 - tempo máximo de atraso
+                    	 LocalTime minTime = currentGroup.getInitialTime().minusHours(2); 	// 05:20:20 - tempo mínimo para registro
+                    	 
+                    	 if(loginLT.isAfter(maxTime))
+                    		 attendanceToCreate.setIsLate(true);
+                    	 else 
+                    		 attendanceToCreate.setIsLate(false);
+                    	 
+                     }
+                     /*
+                     0. Pegar a data do registro
+                     1. Pegar os grupos da Pessoa
+                     2. Comparar a data com a data dos grupos
+                     3. Verificar se está atrasado ou não com base no horário que registro - horário do grupo  
+                     */
+                     
                      Attendance savedAttendance = attendanceRepos.save(attendanceToCreate);
                     
                      responseAttendanceDTO = new ResponseAttendanceDTO(true, photoBase64, referenceImgBase64, savedAttendance.getCreatedAt().toString());
