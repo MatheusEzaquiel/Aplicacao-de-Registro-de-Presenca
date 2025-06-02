@@ -55,34 +55,9 @@ public class PersonController {
 	ImageUtils imageUtils;
 	
 	@GetMapping
-	public ResponseEntity<List<DetailPersonDTO>>  index() {		
-		
-		List<Person> data = personRepos.findByIsActiveTrue();
-		
-		if(data.size() == 0)
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		
-		
-		List<DetailPersonDTO> dataDTO = data.stream()
-		.map(person -> {
-			
-			String imageData = imageUtils.getImageBase64(person.getCpf(), Person.class.toString());
-			
-			if(person.getGroups() != null) {
-				List<BasicGroupDTO> groupsDTO = person.getGroups().stream()
-				.map(group -> new BasicGroupDTO(group))
-				.collect(Collectors.toList());
-				
-				return new DetailPersonDTO(person, imageData, groupsDTO);
-			}
-			
-			return new DetailPersonDTO(person, imageData, null);
-		
-			
-		})
-		.toList();
-		
-		return new ResponseEntity<List<DetailPersonDTO>>(dataDTO, HttpStatus.OK);
+	public  ResponseEntity<ResponseDTO>  index() {		
+		ResponseDTO response = personService.list();
+        return new ResponseEntity<ResponseDTO>(response, HttpStatusCode.valueOf(response.status()));
 	}
 	
 	@GetMapping("/students")

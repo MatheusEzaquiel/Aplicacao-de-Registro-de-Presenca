@@ -34,7 +34,7 @@ public class GroupService {
         
     	//return groupRepository.findAll();
         
-    	List<DetailGroupDTO> dataDTO = groupRepository.findAll().stream()
+    	/*List<DetailGroupDTO> dataDTO = groupRepository.findAll().stream()
     			.map(group -> {
     				
     			List<BasicPersonDTO> personsDTO = group.getPersons()
@@ -46,13 +46,62 @@ public class GroupService {
     	})
     	.toList();
     	
-		return dataDTO;
+		return dataDTO;*/
+    	
+    	List<DetailGroupDTO> dataDTO = groupRepository.findAll().stream()
+    		    .map(group -> {
+    		        List<BasicPersonDTO> personsDTO = group.getPersons()
+    		            .stream()
+    		            .map(person -> new BasicPersonDTO(person))
+    		            .toList();
+
+    		        // Usa toString() se não for null, senão null mesmo
+    		        String initialDateStr = group.getInitialDate() != null ? group.getInitialDate().toString() : null;
+    		        String endDateStr = group.getEndDate() != null ? group.getEndDate().toString() : null;
+    		        String initialTimeStr = group.getInitialTime() != null ? group.getInitialTime().toString() : null;
+    		        String endTimeStr = group.getEndTime() != null ? group.getEndTime().toString() : null;
+
+    		        // Crie o DetailGroupDTO usando os valores convertidos
+    		        DetailGroupDTO dto = new DetailGroupDTO(group, initialDateStr, endDateStr, initialTimeStr, endTimeStr, personsDTO);
+
+    		        return dto;
+    		    })
+    		    .toList();
+
+    		return dataDTO;
+
         
     }
 
     // Busca um grupo pelo ID
-    public Optional<Group> getGroupById(Long id) {
-        return groupRepository.findById(id);
+    public ResponseDTO getGroupById(Long id) {
+
+    	List<BasicPersonDTO> persons = new ArrayList<BasicPersonDTO>();
+        Optional<Group> group = groupRepository.findById(id);
+        
+        if(group.isPresent()) {
+        	
+        	Group groupSelected = group.get();
+        	
+        	// List Persons
+            if(groupSelected.getPersons().size() > 0) {
+           	 
+           	 for(Person person : groupSelected.getPersons())
+           		 persons.add(new BasicPersonDTO(person));
+            }
+            
+            // Usa toString() se não for null, senão null mesmo
+	        String initialDateStr = groupSelected.getInitialDate() != null ? groupSelected.getInitialDate().toString() : null;
+	        String endDateStr = groupSelected.getEndDate() != null ? groupSelected.getEndDate().toString() : null;
+	        String initialTimeStr = groupSelected.getInitialTime() != null ? groupSelected.getInitialTime().toString() : null;
+	        String endTimeStr = groupSelected.getEndTime() != null ? groupSelected.getEndTime().toString() : null;
+
+	        // Crie o DetailGroupDTO usando os valores convertidos
+	        DetailGroupDTO dto = new DetailGroupDTO(groupSelected, initialDateStr, endDateStr, initialTimeStr, endTimeStr, persons);
+	        return new ResponseDTO(HttpStatus.OK.value(), "Grupo Atualizado", dto);
+        }
+        
+        return null;
     }
     
     public ResponseDTO updateByID(Long id, Group data) {
@@ -76,8 +125,17 @@ public class GroupService {
         	 
          }
          
-         DetailGroupDTO detailGroup = new DetailGroupDTO(updatedGroup, persons);
-         return new ResponseDTO(HttpStatus.OK.value(), "Grupo Atualizado", detailGroup);
+         //DetailGroupDTO detailGroup = new DetailGroupDTO(updatedGroup, persons);
+         // Usa toString() se não for null, senão null mesmo
+	        String initialDateStr = updatedGroup.getInitialDate() != null ? updatedGroup.getInitialDate().toString() : null;
+	        String endDateStr = updatedGroup.getEndDate() != null ? updatedGroup.getEndDate().toString() : null;
+	        String initialTimeStr = updatedGroup.getInitialTime() != null ? updatedGroup.getInitialTime().toString() : null;
+	        String endTimeStr = updatedGroup.getEndTime() != null ? updatedGroup.getEndTime().toString() : null;
+
+	        // Crie o DetailGroupDTO usando os valores convertidos
+	        DetailGroupDTO dto = new DetailGroupDTO(updatedGroup, initialDateStr, endDateStr, initialTimeStr, endTimeStr, persons);
+
+         return new ResponseDTO(HttpStatus.OK.value(), "Grupo Atualizado", dto);
          
     }
 
@@ -132,9 +190,19 @@ public class GroupService {
            	 
             }
             
-            DetailGroupDTO data = new DetailGroupDTO(groupWithPersons, persons);
+            //DetailGroupDTO data = new DetailGroupDTO(groupWithPersons, persons);
+          
+            // Usa toString() se não for null, senão null mesmo
+   	        String initialDateStr = groupWithPersons.getInitialDate() != null ? groupWithPersons.getInitialDate().toString() : null;
+   	        String endDateStr = groupWithPersons.getEndDate() != null ? groupWithPersons.getEndDate().toString() : null;
+   	        String initialTimeStr = groupWithPersons.getInitialTime() != null ? groupWithPersons.getInitialTime().toString() : null;
+   	        String endTimeStr = groupWithPersons.getEndTime() != null ? groupWithPersons.getEndTime().toString() : null;
+
+   	        // Crie o DetailGroupDTO usando os valores convertidos
+   	        DetailGroupDTO dto = new DetailGroupDTO(groupWithPersons, initialDateStr, endDateStr, initialTimeStr, endTimeStr, persons);
+
             
-            return new ResponseDTO(HttpStatus.OK.value(), "Parceiro adicionado ao Curso", data);
+            return new ResponseDTO(HttpStatus.OK.value(), "Parceiro adicionado ao Curso", dto);
         }
         
 

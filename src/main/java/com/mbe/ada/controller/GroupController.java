@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 
 @RestController
@@ -29,17 +28,14 @@ public class GroupController{
 
 	@PostMapping
 	public ResponseEntity<Group> create(@RequestBody CreateGroupDTO data) {
-		
 		Group groupCreated = groupService.saveGroup(new Group(data));  
         return ResponseEntity.ok(groupCreated);
-        
 	}
 
     @GetMapping("/{id}")
-    public ResponseEntity<Group> get(@PathVariable Long id) {
-        Optional<Group> group = groupService.getGroupById(id);
-        return group.map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<ResponseDTO> get(@PathVariable Long id) {
+    	ResponseDTO response = groupService.getGroupById(id);  
+    	return new ResponseEntity<ResponseDTO>(response, HttpStatus.valueOf(response.status()));
     }
     
     @PatchMapping("/{id}")

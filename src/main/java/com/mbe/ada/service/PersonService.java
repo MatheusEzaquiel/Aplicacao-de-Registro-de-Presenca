@@ -41,7 +41,35 @@ public class PersonService {
 	@Autowired
 	ImageUtils imageUtils;
 	
+	
+	public ResponseDTO list() {
+		
+		List<Person> personList = personRepos.findByIsActiveTrue();
 
+		if (personList.isEmpty()) {
+		    return new ResponseDTO(HttpStatus.NO_CONTENT.value(), "Sem Pessoas encontradas", null);
+		}
+
+		List<DetailPersonDTO> personsDTO = personList.stream().map(person -> {
+		    String imgBase64 = attachmentService.getImageDataByPersonId(person.getId());
+		    /*if (imgBase64 != null) {
+		        imgBase64 = imgBase64.split(",")[1]; // remove o prefixo
+		    }*/
+
+		    List<BasicGroupDTO> groupsDTO = null;
+		    if (person.getGroups() != null) {
+		        groupsDTO = person.getGroups().stream()
+		                .map(BasicGroupDTO::new)
+		                .collect(Collectors.toList());
+		    }
+
+		    return new DetailPersonDTO(person, imgBase64, groupsDTO);
+		}).toList();
+
+		return new ResponseDTO(HttpStatus.OK.value(), "Lista de Pessoas retornada", personsDTO);
+
+	}
+	
 	public ResponseDTO get(Long id) {
 		 
     	Optional<Person> personOpt = personRepos.findById(id);
@@ -50,15 +78,18 @@ public class PersonService {
         	return new ResponseDTO(HttpStatus.NOT_FOUND.value(), "Pessoa não encontrada", null);
         
         
-        String photoBase64 = imageUtils.getImageBase64(personOpt.get().getCpf(), Person.class.toString());
-        
+        //String photoBase64 = imageUtils.getImageBase64(personOpt.get().getCpf(), Person.class.toString());
+        String imgBase64 = attachmentService.getImageDataByPersonId(personOpt.get().getId());
+	    /*if (imgBase64 != null) {
+	        imgBase64 = imgBase64.split(",")[1]; // remove o prefixo
+	    }*/
         
         List<BasicGroupDTO> groupsDTO = personOpt.get().getGroups()
         		.stream()
         		.map(group -> new BasicGroupDTO(group))
 				.collect(Collectors.toList());
 	
-		DetailPersonDTO detailPersonDTO = new DetailPersonDTO(personOpt.get(), photoBase64, groupsDTO);
+		DetailPersonDTO detailPersonDTO = new DetailPersonDTO(personOpt.get(), imgBase64, groupsDTO);
 		
         return new ResponseDTO(HttpStatus.OK.value(), "Usuário Retornado", detailPersonDTO);
 	}
@@ -101,6 +132,7 @@ public class PersonService {
 		
 		// Remove o prefixo "data:image/png;base64"
 		photoBase64 = data.photoBase64().split(",")[1];
+		System.out.println(photoBase64);
 		String jsonResponse = recognitionAPI.getEncodingFromImage(photoBase64);
 		ResponseDTO responseAPI = gson.fromJson(jsonResponse, ResponseDTO.class);
 		
@@ -119,9 +151,6 @@ public class PersonService {
 
 	}
 
-	public ResponseDTO list() {
-		return null;
-	}
 
 	public ResponseDTO update(Long id, UpdatePersonDTO data) {
 

@@ -1,9 +1,8 @@
 package com.mbe.ada.controller;
 
-import java.time.Instant;
+import java.io.File;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.Period;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -113,16 +112,17 @@ public class AttendanceController {
     public Mono<ResponseEntity<ResponseDTO>> create(@RequestBody CreateAttendanceDTO data) {
         
     	String photoBase64 = data.photoBase64();
+    	
 
     	
-        Optional<Person> person = personRepos.findByCpf(data.cpf());
+        /*Optional<Person> person = personRepos.findByCpf(data.cpf());
         if (person.isEmpty()) {
             return Mono.just(new ResponseEntity<>(new ResponseDTO(404, "Pessoa relacionada não encontrada", null), HttpStatus.NOT_FOUND));
         }
         
         if (photoBase64 == null || photoBase64.isEmpty()) {
             return Mono.just(new ResponseEntity<>(new ResponseDTO(400, "Imagem base64 não fornecida", null), HttpStatus.BAD_REQUEST));
-        }
+        }*/
         
         // Building the JSON request for the Recognition API
         String url = "http://127.0.0.1:8000/compare";
@@ -141,12 +141,19 @@ public class AttendanceController {
                 	 
                 	 
                 	 if(!responseDTO.identified())
-                		 return new ResponseEntity<>(new ResponseDTO(200, "Success", new ResponseAttendanceDTO(false, null, null, null)), HttpStatus.OK);
+                		 return new ResponseEntity<>(new ResponseDTO(200, "Not Found", new ResponseAttendanceDTO(false, null, null, null)), HttpStatus.OK);
                 		 
-                		 
+              	 
                 	 // Get Photo name
-                     String[] photoName = responseDTO.refereceImagePath().split("/");
-                     String referenceImgBase64 = ImageUtils.getImageBase64(photoName[6], Person.class.getName());
+                	 String path = responseDTO.refereceImagePath();
+                	 File file = new File(path);
+                	 String fileName = file.getName();
+                	 
+                     String referenceImgBase64 = ImageUtils.getImageBase64(fileName, Person.class.getName());
+                     
+                     // Get CPF from Image name
+                     String cpf = fileName.split("\\.")[0];
+                     Optional<Person> person = personRepos.findByCpf(cpf);
                      
                      
                      // Register attendance

@@ -16,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class ImageUtils {
 	
-	private static Path folderPath = Path.of("/opt/images");
+	private static Path folderPath = Path.of("C:/Users/Matheus/Documents/projects/ARP/arp-content/content/images");
 	private static Path referenceImgPath = Path.of("/persons/reference-img");
 	
 	public static String getImageBase64(String filename, String entity) {
@@ -66,7 +66,7 @@ public class ImageUtils {
 		}
 		
 		// Cria o arquivo no caminho especificado
-		File imageFile = new File(folderPath + File.separator + referenceImgPath + File.separator + filename);
+		File imageFile = new File(folderPath + File.separator + referenceImgPath + File.separator + filename + ".jpg");
 		
 		
 		try (FileOutputStream fileOutputStream = new FileOutputStream(imageFile)) {

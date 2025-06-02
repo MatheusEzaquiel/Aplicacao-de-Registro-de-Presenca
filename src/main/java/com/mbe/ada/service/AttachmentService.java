@@ -30,7 +30,8 @@ public class AttachmentService {
 	@Transactional
 	public String getImageDataByPersonId(@PathVariable Long personId) {
 		
-		Optional<Photo> photo = photoRepos.findByPersonId(personId);
+		//Optional<Photo> photo = photoRepos.findByPersonId(personId);
+		Optional<Photo> photo = photoRepos.findTopByPersonIdOrderByCreatedAtDesc(personId);
 		
 		if(photo.isPresent()) {
 			return photo.get().getImageData();

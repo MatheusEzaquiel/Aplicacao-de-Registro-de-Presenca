@@ -22,15 +22,32 @@ public record DetailGroupDTO(
 	    Boolean sunday,
 	    List<BasicPersonDTO> persons) {
 	
-	public DetailGroupDTO(Group group, List<BasicPersonDTO> persons) {
+	/*public DetailGroupDTO(Group group, List<BasicPersonDTO> persons) {
         this(
             group.getId(),
             group.getName(),
             group.getDescription(),
-            group.getInitialDate().toString(),
-            group.getEndDate().toString(),
-            group.getInitialTime().toString(),
-            group.getEndTime().toString(),
+            group.getInitialDate(),
+            group.getEndDate()),
+            group.getInitialTime(),
+            group.getEndTime(),
+            group.isMonday(),
+            group.isTuesday(),
+            group.isWednesday(),
+            group.isThursday(),
+            group.isFriday(),
+            group.isSaturday(),
+            group.isSunday(),
+            persons
+        );
+    }*/
+	
+	public DetailGroupDTO(Group group, String initialDate, String endDate, String initialTime, String endTime, List<BasicPersonDTO> persons) {
+        this(
+            group.getId(),
+            group.getName(),
+            group.getDescription(),
+           initialDate, endDate, initialTime, endTime,
             group.isMonday(),
             group.isTuesday(),
             group.isWednesday(),

@@ -39,7 +39,7 @@ public class Photo {
 	    private Person person;
 
 	    @Lob
-	    @Column(name = "image_data", columnDefinition = "bytea")
+	    @Column(name = "image_data", columnDefinition = "TEXT")
 	    private String imageData;
 	    
 	    @Column(name = "is_default")
